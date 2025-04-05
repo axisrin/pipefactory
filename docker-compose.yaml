@@ -1,0 +1,55 @@
+version: '3.8'
+
+networks:
+  default:
+    driver: bridge
+
+services:
+  superset:
+    image: apache/superset:latest
+    container_name: superset
+    environment:
+      SUPERSET_SECRET_KEY: 'your_secret_key'
+      SUPERSET_DATABASE_URL: 'postgresql+psycopg2://superset:superset@postgres/superset'
+    ports:
+      - "8088:8088"
+    depends_on:
+      - postgres
+    volumes:
+      - superset_home:/app/superset_home
+
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    environment:
+      POSTGRES_USER: superset
+      POSTGRES_PASSWORD: superset
+      POSTGRES_DB: superset
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  nifi:
+    image: apache/nifi:latest
+    container_name: nifi
+    ports:
+      - "8081:8080"
+      - "8443:8443"
+    environment:
+      NIFI_WEB_HTTP_PORT: "8081"
+      SINGLE_USER_CREDENTIALS_USERNAME: "admin" # Задаем пользователя
+      SINGLE_USER_CREDENTIALS_PASSWORD: "111111111111111" # Задаем пароль
+    volumes:
+      - nifi_data:/opt/nifi/nifi-current/conf
+      - nifi_logs:/opt/nifi/nifi-current/logs
+      - nifi_flow:/opt/nifi/nifi-current/flowfile_repository
+    networks:
+      - default
+
+volumes:
+  superset_home:
+  postgres_data:
+  nifi_data:
+  nifi_logs:
+  nifi_flow:
