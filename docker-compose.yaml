@@ -44,6 +44,7 @@ services:
       - nifi_data:/opt/nifi/nifi-current/conf
       - nifi_logs:/opt/nifi/nifi-current/logs
       - nifi_flow:/opt/nifi/nifi-current/flowfile_repository
+      - ./postgresql-42.7.4.jar:/opt/nifi/nifi-current/lib/postgresql-42.7.4.jar
     networks:
       - default
 
